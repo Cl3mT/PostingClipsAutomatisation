@@ -2,6 +2,7 @@ import downloadClips as dl
 import processClips as pc
 import shutil 
 import os
+import uploadYoutube as yt_upload
 from pathlib import Path
 from datetime import datetime
 
@@ -17,6 +18,10 @@ date_du_jour = datetime.now().strftime("%Y-%m-%d")
 streamers_list = [line.strip() for line in Path(os.path.join(os.path.dirname(__file__), "../options/streamers.txt")).read_text().splitlines() if line.strip()]
 
 if __name__ == "__main__":
+    # 0. Initialisation de la connexion YouTube (une seule fois au démarrage)
+    print("🔑 Authentification YouTube en cours...")
+    youtube_service = yt_upload.authentifier_youtube()
+
     for streamer_name in streamers_list:
         print(f"\n{'='*40}")
         print(f"Début du traitement de {streamer_name}...")
@@ -46,6 +51,25 @@ if __name__ == "__main__":
                     input_path=os.path.join(base_video_path, clip.name),
                     output_path=chemin_video_finale,
                     output_text_path=chemin_fichier_texte
+                )
+
+                print("\n🚀 Préparation de la publication sur YouTube Shorts...")
+                
+                # Récupération de la description générée par l'IA
+                description_clip = ""
+                if os.path.exists(chemin_fichier_texte):
+                    with open(chemin_fichier_texte, "r", encoding="utf-8") as f:
+                        description_clip = f.read()
+                
+                # Le titre est basé sur le nom du fichier sans l'extension
+                titre_clip = os.path.splitext(clip.name)[0]
+                
+                # Lancement de l'upload
+                yt_upload.upload_short(
+                    youtube=youtube_service,
+                    video_path=chemin_video_finale,
+                    titre=titre_clip,
+                    description=description_clip
                 )
             except ValueError as e:
                 print(f"⚠️ Clip ignoré : {e}")
