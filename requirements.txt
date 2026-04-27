@@ -6,3 +6,7 @@ Requests==2.33.1
 openai-whisper
 yt_dlp==2026.3.17
 opencv-python
+google-genai
+google-api-python-client
+google-auth-oauthlib
+google-auth-httplib2

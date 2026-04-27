@@ -5,6 +5,11 @@ import os
 # --- Paramètre de configuration de ImageMagick ---
 os.environ["IMAGEMAGICK_BINARY"] = config.get("IMAGEMAGICK_BINARY", r"C:\Program Files\ImageMagick-7.1.2-Q16-HDRI\magick.exe")
 
+# --- Configuration du répertoire temporaire pour MoviePy ---
+import tempfile
+tempfile.tempdir = os.path.abspath("temp")
+os.makedirs(tempfile.tempdir, exist_ok=True)
+
 # --- Imports restants ---
 import cv2
 import whisper
@@ -150,7 +155,7 @@ def process_final_clip(input_path, output_path, output_text_path):
     print(f"-> Extraction audio et analyse IA (Whisper {WHISPER_MODEL})...")
     video = VideoFileClip(input_path)
     
-    audio_path = "temp_audio.wav"
+    audio_path = "temp/temp_audio.wav"
     video.audio.write_audiofile(audio_path, logger=None)
 
     model = whisper.load_model(WHISPER_MODEL) 

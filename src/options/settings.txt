@@ -2,8 +2,8 @@
 IMAGEMAGICK_BINARY:C:\Program Files\ImageMagick-7.1.2-Q16-HDRI\magick.exe
 
 # --- Paramètres de Téléchargement ---
-DAYS_FILTER:7
-CLIP_LIMIT:3
+DAYS_FILTER:30
+CLIP_LIMIT:5
 
 # --- Paramètres de Montage ---
 WHISPER_MODEL:base

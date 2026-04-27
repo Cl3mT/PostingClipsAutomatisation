@@ -3,26 +3,39 @@ import google_auth_oauthlib.flow
 import googleapiclient.discovery
 import googleapiclient.errors
 from googleapiclient.http import MediaFileUpload
+from google.oauth2.credentials import Credentials
+from google.auth.transport.requests import Request
 
 # Définition des permissions requises
 SCOPES = ["https://www.googleapis.com/auth/youtube.upload"]
 
 def authentifier_youtube():
-    """Gère l'authentification OAuth2 avec YouTube."""
-    os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
+    """Gère l'authentification OAuth2 avec YouTube, en persistant les credentials."""
+    creds = None
+    token_file = "token.json"  # Fichier pour stocker les credentials
     
-    client_secrets_file = "client_secret.json" # Assurez-vous que ce fichier est à la racine
-
-    # Récupère les identifiants via le navigateur à la première exécution
-    flow = google_auth_oauthlib.flow.InstalledAppFlow.from_client_secrets_file(
-        client_secrets_file, SCOPES)
+    # Vérifie si le fichier de token existe
+    if os.path.exists(token_file):
+        creds = Credentials.from_authorized_user_file(token_file, SCOPES)
     
-    # Cela va ouvrir une page web pour vous demander d'autoriser l'application
-    credentials = flow.run_local_server(port=0)
+    # Si les credentials n'existent pas ou sont expirés, on les récupère
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
+            client_secrets_file = "client_secret.json"
+            flow = google_auth_oauthlib.flow.InstalledAppFlow.from_client_secrets_file(
+                client_secrets_file, SCOPES)
+            creds = flow.run_local_server(port=0)
+        
+        # Sauvegarde les credentials pour les prochaines exécutions
+        with open(token_file, 'w') as token:
+            token.write(creds.to_json())
     
     # Construit le service YouTube
     youtube = googleapiclient.discovery.build(
-        "youtube", "v3", credentials=credentials)
+        "youtube", "v3", credentials=creds)
     
     return youtube
 

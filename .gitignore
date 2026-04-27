@@ -6,3 +6,9 @@ env/
 *.mp4
 *.wav
 *.json
+*.txt
+!src/options/settings.txt
+!src/options/streamers.txt
+!TODO.txt
+!requirements.txt
+temp/
