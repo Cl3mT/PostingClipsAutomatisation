@@ -1,8 +1,3 @@
-# --- Identifiants ---
-TWITCH_CLIENT_ID:sezq4jx1l3oleuvz21hshcyzoy59g0
-TWITCH_CLIENT_SECRET:kqp7dta8xcyoifga9y2hqo3k2qky13
-GEMINI_API_KEY:AIzaSyAfwV8E7kzzOBnAKDL9bNip-z9dZslqgZw
-
 # --- Chemins ---
 IMAGEMAGICK_BINARY:C:\Program Files\ImageMagick-7.1.2-Q16-HDRI\magick.exe
 

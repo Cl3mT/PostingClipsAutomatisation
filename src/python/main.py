@@ -14,7 +14,7 @@ date_du_jour = datetime.now().strftime("%Y-%m-%d")
 
 # Lecture du fichier de streamers
 # Tu peux changer le nom en streamers.txt si c'est celui que tu utilises désormais.
-streamers_list = [line.strip() for line in Path("streamers.txt").read_text().splitlines() if line.strip()]
+streamers_list = [line.strip() for line in Path(os.path.join(os.path.dirname(__file__), "../options/streamers.txt")).read_text().splitlines() if line.strip()]
 
 if __name__ == "__main__":
     for streamer_name in streamers_list:
