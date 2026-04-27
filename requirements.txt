@@ -1,0 +1,8 @@
+mediapipe==0.10.33
+moviepy==2.2.1
+numpy==2.4.4
+protobuf==7.34.1
+Requests==2.33.1
+whisper==1.1.10
+yt_dlp==2026.3.17
+opencv-python
