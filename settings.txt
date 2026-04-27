@@ -1,0 +1,20 @@
+# --- Identifiants ---
+TWITCH_CLIENT_ID:sezq4jx1l3oleuvz21hshcyzoy59g0
+TWITCH_CLIENT_SECRET:kqp7dta8xcyoifga9y2hqo3k2qky13
+GEMINI_API_KEY:AIzaSyAfwV8E7kzzOBnAKDL9bNip-z9dZslqgZw
+
+# --- Chemins ---
+IMAGEMAGICK_BINARY:C:\Program Files\ImageMagick-7.1.2-Q16-HDRI\magick.exe
+
+# --- Paramètres de Téléchargement ---
+DAYS_FILTER:7
+CLIP_LIMIT:3
+
+# --- Paramètres de Montage ---
+WHISPER_MODEL:base
+WORDS_PER_LINE:3
+SPEED_RATIO:1.02
+THREADS:4
+
+# --- Paramètres IA ---
+MAX_RETRIES:3

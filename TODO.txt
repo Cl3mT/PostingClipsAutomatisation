@@ -1,0 +1,1 @@
+gérer les erreurs de demande à l'IA pour qu'en cas de 3 surcharges, on attende 1 min avant de redemander à l'IA5
