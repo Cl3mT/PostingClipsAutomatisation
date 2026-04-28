@@ -1,6 +1,7 @@
 import os
 import whisper
 from pathlib import Path
+from logger_config import logger
 
 import describingClips as desc
 
@@ -13,14 +14,14 @@ def subtitlingClip(input_path, output_path):
     streamer_name = Path(input_path).parts[-2]
     output_text_path = output_path.replace(".mp4",".txt")
 
-    print(f"Ouverture de la vidéo : {input_path}")
+    logger.info("Ouverture de la vidéo : %s", input_path)
     video = VideoFileClip(input_path)
     
     audio_path = "temp_audio.wav"
-    print("Extraction de l'audio...")
+    logger.info("Extraction de l'audio...")
     video.audio.write_audiofile(audio_path, logger=None)
 
-    print("Transcription de l'audio avec Whisper...")
+    logger.info("Transcription de l'audio avec Whisper...")
     model = whisper.load_model("base") 
     
     # ON RÉACTIVE LES TIMESTAMPS PAR MOT
@@ -30,14 +31,14 @@ def subtitlingClip(input_path, output_path):
     texte_clip = result.get('text', '').strip()
     titre = desc.generer_description_et_titre(texte_clip, streamer_name, output_text_path)["Titre"]
 
-    print("Génération des sous-titres synchronisés...")
+    logger.info("Génération des sous-titres synchronisés...")
     subs_clips = []
 
     # =========================================================
     # --- AJOUT : CRÉATION DU CLIP TITRE SUR FOND BLANC ---
     # =========================================================
     if titre:
-        print(f"Création du titre fixe : {titre}")
+        logger.info("Création du titre fixe : %s", titre)
         # On ajoute des espaces au début et à la fin pour faire "respirer" 
         # le texte dans son fond blanc (effet de padding)
         texte_titre = f"  {titre.upper()}  "
@@ -102,7 +103,7 @@ def subtitlingClip(input_path, output_path):
                 subs_clips.append(txt_clip)
                 mots_actuels = []
 
-    print("Assemblage final de la vidéo...")
+    logger.info("Assemblage final de la vidéo...")
     final_video = CompositeVideoClip([video] + subs_clips)
 
     final_video.write_videofile(
@@ -116,4 +117,4 @@ def subtitlingClip(input_path, output_path):
     if os.path.exists(audio_path):
         os.remove(audio_path)
         
-    print(f"✅ Vidéo sous-titrée générée avec succès : {output_path}")
+    logger.info("✅ Vidéo sous-titrée générée avec succès : %s", output_path)

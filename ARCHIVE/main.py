@@ -6,6 +6,7 @@ import cleaning as cl
 import describingClips as desc
 
 import os
+from logger_config import logger
 
 from pathlib import Path
 from datetime import datetime
@@ -16,9 +17,10 @@ streamers_list = [line.strip() for line in Path("streamers2.txt").read_text().sp
 
 if __name__ == "__main__":
     for streamer_name in streamers_list:
-        print(f"\n{'='*40}")
-        print(f"Début du traitement de {streamer_name}...")
-        print(f"{'='*40}")
+        logger.info("")
+        logger.info("%s", "=" * 40)
+        logger.info("Début du traitement de %s...", streamer_name)
+        logger.info("%s", "=" * 40)
         
         # On télécharge les clips
         dl.downloadClip(streamer_name, 10)
@@ -30,7 +32,7 @@ if __name__ == "__main__":
             continue
             
         for clip in base_video_path_typed.glob("*.mp4"):
-            print(f"\n🎬 Début du traitement du clip : {clip.name}...")
+            logger.info("🎬 Début du traitement du clip : %s...", clip.name)
 
             #CREATING REPS NEEDED
             resized_video_path = os.path.join("Clips_Twitch_Resized", f"Clips_{date_du_jour}", streamer_name)
@@ -48,15 +50,15 @@ if __name__ == "__main__":
             
             try:
                 rs.resizingClip(os.path.join(base_video_path, clip.name), resized_video_path)
-                print(f"✅ Fin du traitement du clip : {clip.name}.")
+                logger.info("✅ Fin du traitement du clip : %s.", clip.name)
                 
             except ValueError as e:
                 # Si l'erreur est notre ValueError ("Aucun visage détecté")
-                print(f"⚠️ Clip ignoré : {e}")
+                logger.warning("⚠️ Clip ignoré : %s", e)
                 
             except Exception as e:
                 # Sécurité supplémentaire au cas où une autre erreur inattendue surviendrait
-                print(f"❌ Erreur inattendue sur le clip {clip.name} : {e}")
+                logger.error("❌ Erreur inattendue sur le clip %s : %s", clip.name, e, exc_info=True)
 
             #ADDING SUBTITLES
             texte_complet = sub.subtitlingClip(os.path.join(resized_video_path,clip.name),subtitled_video_path)
@@ -86,4 +88,4 @@ if __name__ == "__main__":
 
 
         
-        print(f"\nFin du traitement de {streamer_name}.")
+        logger.info("Fin du traitement de %s.", streamer_name)

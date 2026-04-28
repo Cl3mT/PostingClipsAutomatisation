@@ -1,6 +1,7 @@
 # --- Premiers imports ---
 import config
 import os
+from logger_config import logger
 
 # --- Paramètre de configuration de ImageMagick ---
 os.environ["IMAGEMAGICK_BINARY"] = config.get("IMAGEMAGICK_BINARY", r"C:\Program Files\ImageMagick-7.1.2-Q16-HDRI\magick.exe")
@@ -20,7 +21,6 @@ import moviepy.video.fx.all as vfx
 from moviepy.editor import VideoFileClip, TextClip, CompositeVideoClip, clips_array
 
 import describingClips as desc
-import config
 
 # --- Paramètres de configuration restants ---
 WHISPER_MODEL = config.get("WHISPER_MODEL", "base")
@@ -150,9 +150,9 @@ def get_camera_bbox(video_path, face_bbox):
 # ==============================================================================
 def process_final_clip(input_path, output_path, output_text_path):
     streamer_name = Path(input_path).parts[-2]
-    print(f"\n🎬 DÉBUT DU MONTAGE COMPLET : {Path(input_path).name}")
+    logger.info("🎬 DÉBUT DU MONTAGE COMPLET : %s", Path(input_path).name)
 
-    print(f"-> Extraction audio et analyse IA (Whisper {WHISPER_MODEL})...")
+    logger.info("-> Extraction audio et analyse IA (Whisper %s)...", WHISPER_MODEL)
     video = VideoFileClip(input_path)
     
     audio_path = "temp/temp_audio.wav"
@@ -164,7 +164,7 @@ def process_final_clip(input_path, output_path, output_text_path):
 
     titre = desc.generer_description_et_titre(texte_clip, streamer_name, output_text_path)["Titre"]
 
-    print("-> Recadrage de la caméra et du jeu...")
+    logger.info("-> Recadrage de la caméra et du jeu...")
     TARGET_W, TARGET_H = 1080, 1920
     CAM_H, GAME_H = 640, 1280
     
@@ -182,7 +182,7 @@ def process_final_clip(input_path, output_path, output_text_path):
     video_verticale = clips_array([[cam_clip], [game_clip]])
     video_verticale = video_verticale.set_audio(video.audio)
 
-    print("-> Génération des sous-titres et du titre...")
+    logger.info("-> Génération des sous-titres et du titre...")
     subs_clips = []
 
     if titre:
@@ -219,11 +219,11 @@ def process_final_clip(input_path, output_path, output_text_path):
 
     composite_finale = CompositeVideoClip([video_verticale] + subs_clips)
 
-    print(f"-> Application de l'accélération (x{SPEED_RATIO})...")
+    logger.info("-> Application de l'accélération (x%s)...", SPEED_RATIO)
     # Utilisation du paramètre dynamique
     composite_rapide = composite_finale.fx(vfx.speedx, SPEED_RATIO)
 
-    print("-> Rendu de la vidéo en cours...")
+    logger.info("-> Rendu de la vidéo en cours...")
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
     composite_rapide.write_videofile(
@@ -245,4 +245,4 @@ def process_final_clip(input_path, output_path, output_text_path):
     composite_finale.close()
     composite_rapide.close()
     
-    print(f"✅ Montage validé avec succès : {output_path}")
+    logger.info("✅ Montage validé avec succès : %s", output_path)

@@ -3,6 +3,7 @@ import yt_dlp
 import os
 from datetime import datetime, timedelta, timezone
 import config # <--- Import de la config
+from logger_config import logger
 
 # Récupération dynamique depuis settings.txt
 CLIENT_ID = config.get("TWITCH_CLIENT_ID", "")
@@ -32,7 +33,7 @@ def obtenir_id_streamer(nom_chaine, token):
     donnees = reponse.json()
     
     if not donnees.get("data"):
-        print(f"❌ Impossible de trouver la chaîne : {nom_chaine}")
+        logger.error("❌ Impossible de trouver la chaîne : %s", nom_chaine)
         return None
     return donnees["data"][0]["id"]
 
@@ -58,10 +59,10 @@ def recuperer_top_clips(broadcaster_id, token, limite=5):
         vues = clip['view_count']
         lien = clip['url']
         liens_clips.append(lien)
-        print(f"🎬 Clip trouvé ({DAYS_FILTER} jours) : {titre} ({vues} vues)")
+        logger.info("🎬 Clip trouvé (%s jours) : %s (%s vues)", DAYS_FILTER, titre, vues)
         
     if not liens_clips:
-        print(f"🤷 Aucun clip trouvé pour cette chaîne dans les {DAYS_FILTER} derniers jours.")
+        logger.warning("🤷 Aucun clip trouvé pour cette chaîne dans les %s derniers jours.", DAYS_FILTER)
         
     return liens_clips
 
@@ -76,11 +77,11 @@ def telecharger_clip(url):
         with yt_dlp.YoutubeDL(options) as ydl:
             ydl.download([url])
     except Exception as e:
-        print(f"❌ Erreur lors du téléchargement : {e}")
+        logger.error("❌ Erreur lors du téléchargement : %s", e, exc_info=True)
 
 def downloadClip(streamer_name, limite=5):
-    print(f"--- Démarrage du téléchargeur (Filtre: {DAYS_FILTER} jours) ---")
-    print("🔑 Connexion à l'API Twitch...")
+    logger.info("--- Démarrage du téléchargeur (Filtre: %s jours) ---", DAYS_FILTER)
+    logger.info("🔑 Connexion à l'API Twitch...")
     token_acces = obtenir_token_twitch()
 
     global DOSSIER_DESTINATION
@@ -89,11 +90,11 @@ def downloadClip(streamer_name, limite=5):
     streamer_id = obtenir_id_streamer(streamer_name, token_acces)
     
     if streamer_id:
-        print(f"\n🔍 Recherche des clips des {DAYS_FILTER} derniers jours pour {streamer_name}...")
+        logger.info("🔍 Recherche des clips des %s derniers jours pour %s...", DAYS_FILTER, streamer_name)
         liens = recuperer_top_clips(streamer_id, token_acces, limite) 
         
         if liens:
-            print("\n📥 Début des téléchargements...")
+            logger.info("📥 Début des téléchargements...")
             for lien in liens:
                 telecharger_clip(lien)
-            print("\n✅ Terminé ! Les clips sont dans le dossier :", DOSSIER_DESTINATION)
+            logger.info("✅ Terminé ! Les clips sont dans le dossier : %s", DOSSIER_DESTINATION)

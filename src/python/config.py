@@ -1,5 +1,6 @@
 import os
 from dotenv import load_dotenv
+from logger_config import logger
 
 # Charge les variables du fichier .env dans les variables d'environnement de l'OS
 load_dotenv()
@@ -7,7 +8,7 @@ load_dotenv()
 def load_settings(filepath=os.path.join(os.path.dirname(__file__), "../options/settings.txt")):
     settings = {}
     if not os.path.exists(filepath):
-        print(f"⚠️ Fichier {filepath} introuvable. Utilisation des valeurs par défaut.")
+        logger.warning("⚠️ Fichier %s introuvable. Utilisation des valeurs par défaut.", filepath)
         return settings
         
     with open(filepath, "r", encoding="utf-8") as f:

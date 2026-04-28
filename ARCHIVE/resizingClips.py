@@ -138,17 +138,17 @@ def create_tiktok_clip(input_path, output_path):
     CAM_H = 640    
     GAME_H = 1280  
     
-    print("1. Recherche du vrai visage du streamer...")
+    logger.info("1. Recherche du vrai visage du streamer...")
     face_bbox = get_streamer_face_bbox(input_path)
     
-    print("2. Création du cadre de caméra au ratio exact...")
+    logger.info("2. Création du cadre de caméra au ratio exact...")
     cam_x1, cam_y1, cam_x2, cam_y2 = get_camera_bbox(input_path, face_bbox)
 
-    print("3. Chargement de la vidéo...")
+    logger.info("3. Chargement de la vidéo...")
     video = VideoFileClip(input_path)
     vid_w, vid_h = video.size
 
-    print("4. Découpage et application...")
+    logger.info("4. Découpage et application...")
     
     cam_clip = video.crop(x1=cam_x1, y1=cam_y1, x2=cam_x2, y2=cam_y2)
     
@@ -168,7 +168,7 @@ def create_tiktok_clip(input_path, output_path):
     # CORRECTION CRITIQUE 2 (suite)
     game_clip = game_clip.resize(newsize=(TARGET_W, GAME_H))
 
-    print("5. Assemblage et rendu...")
+    logger.info("5. Assemblage et rendu...")
     final_video = clips_array([[cam_clip], [game_clip]])
     final_video = final_video.set_audio(video.audio)
 
@@ -180,15 +180,7 @@ def create_tiktok_clip(input_path, output_path):
         preset="fast",
         threads=4
     )
-    print("Terminé ! Vidéo sauvegardée sous :", output_path)
-
-    final_video.close()
-    video.close()
-    cam_clip.close()
-    game_clip.close()
-
-def resizingClip(input_path, output_path):
-    
+    logger.info("Terminé ! Vidéo sauvegardée sous : %s", output_path)
     
     clip_name = os.path.splitext(os.path.basename(input_path))[0]
     clip_name_clean = clean_filename(clip_name)

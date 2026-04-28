@@ -1,5 +1,6 @@
 import os
 import shutil
+from logger_config import logger
 
 def ask_delete(directory):
     while True:
@@ -9,7 +10,7 @@ def ask_delete(directory):
         elif response == 'n':
             return False
         else:
-            print("Réponse invalide. Veuillez répondre par 'y' ou 'n'.")
+            logger.warning("Réponse invalide. Veuillez répondre par 'y' ou 'n'.")
 
 def main():
     project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -24,13 +25,13 @@ def main():
             if ask_delete(dir_path):
                 try:
                     shutil.rmtree(dir_path)
-                    print(f"Répertoire '{dir_path}' supprimé avec succès.")
+                    logger.info("Répertoire '%s' supprimé avec succès.", dir_path)
                 except Exception as e:
-                    print(f"Erreur lors de la suppression de '{dir_path}': {e}")
+                    logger.error("Erreur lors de la suppression de '%s': %s", dir_path, e, exc_info=True)
             else:
-                print(f"Répertoire '{dir_path}' conservé.")
+                logger.info("Répertoire '%s' conservé.", dir_path)
         else:
-            print(f"Répertoire '{dir_path}' n'existe pas.")
+            logger.warning("Répertoire '%s' n'existe pas.", dir_path)
 
 if __name__ == "__main__":
     main()

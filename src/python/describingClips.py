@@ -3,13 +3,14 @@ import os
 import json
 import time
 import config
+from logger_config import logger
 
 # Paramètres IA
 API_KEY = config.get("GEMINI_API_KEY", "")
 MAX_TENTATIVES = config.get("MAX_RETRIES", 3, int)
 
 def generer_description_et_titre(texte_clip, nom_streamer, output_text_path):
-    print(f"Génération des métadonnées (Titre/Description) pour {nom_streamer}...")
+    logger.info("Génération des métadonnées (Titre/Description) pour %s...", nom_streamer)
     
     client = genai.Client(api_key=API_KEY)
 
@@ -48,19 +49,19 @@ def generer_description_et_titre(texte_clip, nom_streamer, output_text_path):
             with open(output_text_path, "w", encoding="utf-8") as f:
                 f.write(donnees_ia["Description"])
                 
-            print(f"✅ Métadonnées générées et description sauvegardée : {output_text_path}")
+            logger.info("✅ Métadonnées générées et description sauvegardée : %s", output_text_path)
             return donnees_ia
 
         except Exception as e:
             erreur_str = str(e)
             if "503" in erreur_str or "UNAVAILABLE" in erreur_str or "429" in erreur_str:
                 if tentative < MAX_TENTATIVES - 1:
-                    print(f"⚠️ Serveur IA surchargé (tentative {tentative + 1}/{MAX_TENTATIVES}). Pause de 5 secondes...")
-                    time.sleep(5)
+                    logger.warning("⚠️ Serveur IA surchargé (tentative %s/%s). Pause de 5 secondes...", tentative + 1, MAX_TENTATIVES)
+                    time.sleep(60)
                 else:
-                    print(f"❌ Échec après {MAX_TENTATIVES} tentatives.")
+                    logger.error("❌ Échec après %s tentatives.", MAX_TENTATIVES)
             else:
-                print(f"❌ Erreur inattendue : {e}")
+                logger.error("❌ Erreur inattendue : %s", e, exc_info=True)
                 break
 
     return {"Titre": "CLIP INCROYABLE", "Description": f"Regardez ça ! #{nom_streamer} #twitchfr"}

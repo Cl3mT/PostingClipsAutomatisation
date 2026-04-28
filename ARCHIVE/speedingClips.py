@@ -1,6 +1,7 @@
 import os
 from moviepy.editor import VideoFileClip
 import moviepy.video.fx.all as vfx
+from logger_config import logger
 
 ACC_RATIO = 1.1
 
@@ -9,13 +10,13 @@ def speedingClip(input_path, output_path):
     Prend une vidéo en entrée, l'accélère de 10% (vidéo et audio),
     et sauvegarde la nouvelle vidéo.
     """
-    print(f"Ouverture de la vidéo : {input_path}")
+    logger.info("Ouverture de la vidéo : %s", input_path)
     
     # Charger la vidéo
     video = VideoFileClip(input_path)
     
     # --- APPLICATION DE L'EFFET ---
-    print("Application de l'accélération (10%)...")
+    logger.info("Application de l'accélération (10%)...")
     # vfx.speedx avec un facteur de 1.1 accélère la vidéo de 10%
     # Il traite automatiquement la piste audio pour qu'elle reste synchronisée.
     video_acceleree = video.fx(vfx.speedx, ACC_RATIO)
@@ -26,7 +27,7 @@ def speedingClip(input_path, output_path):
         os.makedirs(dossier_sortie, exist_ok=True)
         
     # Exporter la vidéo
-    print("Exportation de la nouvelle vidéo...")
+    logger.info("Exportation de la nouvelle vidéo...")
     video_acceleree.write_videofile(
         output_path, 
         codec="libx264", 
@@ -40,4 +41,4 @@ def speedingClip(input_path, output_path):
     video.close()
     video_acceleree.close()
     
-    print(f"✅ Vidéo accélérée générée avec succès : {output_path}")
+    logger.info("✅ Vidéo accélérée générée avec succès : %s", output_path)

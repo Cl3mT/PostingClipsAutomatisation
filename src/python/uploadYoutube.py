@@ -5,6 +5,7 @@ import googleapiclient.errors
 from googleapiclient.http import MediaFileUpload
 from google.oauth2.credentials import Credentials
 from google.auth.transport.requests import Request
+from logger_config import logger
 
 # Définition des permissions requises
 SCOPES = ["https://www.googleapis.com/auth/youtube.upload"]
@@ -39,12 +40,69 @@ def authentifier_youtube():
     
     return youtube
 
-def upload_short(youtube, video_path, titre, description):
+def upload_short(youtube, video_path, titre, description, publish_at=None):
+    """Envoie la vidéo sur YouTube en tant que Short, avec possibilité de planification."""
+    logger.info("⬆️ Début de l'upload YouTube pour : %s", titre)
+    
+    # Pour s'assurer que c'est un Short, on ajoute le hashtag dans le titre
+    titre_complet = f"{titre[:80]} #Shorts"
+    
+    # --- NOUVEAU : Logique de statut ---
+    status = {
+        "selfDeclaredMadeForKids": False
+    }
+    
+    if publish_at:
+        status["privacyStatus"] = "private" # OBLIGATOIRE pour planifier
+        status["publishAt"] = publish_at
+        logger.info("📅 Le Short sera planifié pour le : %s", publish_at)
+    else:
+        status["privacyStatus"] = "public"
+    # -----------------------------------
+
+    request_body = {
+        "snippet": {
+            "categoryId": "20", # 20 = Gaming
+            "title": titre_complet,
+            "description": description,
+            "tags": ["shorts", "twitchfr", "gaming", "clip"]
+        },
+        "status": status
+    }
+
+    media_file = MediaFileUpload(video_path, chunksize=-1, resumable=True)
+
+    request = youtube.videos().insert(
+        part="snippet,status",
+        body=request_body,
+        media_body=media_file
+    )
+
+    try:
+        response = request.execute()
+        logger.info("✅ Vidéo uploadée avec succès ! URL : https://youtube.com/shorts/%s", response['id'])
+        return response['id']
+    except googleapiclient.errors.HttpError as e:
+        logger.error("❌ Erreur lors de l'upload : %s", e, exc_info=True)
+        return None
     """Envoie la vidéo sur YouTube en tant que Short."""
-    print(f"⬆️ Début de l'upload YouTube pour : {titre}")
+    logger.info("⬆️ Début de l'upload YouTube pour : %s", titre)
     
     # Pour s'assurer que c'est un Short, on ajoute le hashtag dans le titre ou la description
     titre_complet = f"{titre[:80]} #Shorts" # YouTube limite les titres à 100 caractères
+
+    # --- NOUVEAU : Logique de statut ---
+    status = {
+        "selfDeclaredMadeForKids": False
+    }
+    
+    if publish_at:
+        status["privacyStatus"] = "private" # OBLIGATOIRE pour planifier
+        status["publishAt"] = publish_at
+        logger.info("📅 Le Short sera planifié pour le : %s", publish_at)
+    else:
+        status["privacyStatus"] = "public"
+    # -----------------------------------
     
     request_body = {
         "snippet": {
@@ -69,8 +127,8 @@ def upload_short(youtube, video_path, titre, description):
 
     try:
         response = request.execute()
-        print(f"✅ Vidéo uploadée avec succès ! URL : https://youtube.com/shorts/{response['id']}")
+        logger.info("✅ Vidéo uploadée avec succès ! URL : https://youtube.com/shorts/%s", response["id"])
         return response['id']
     except googleapiclient.errors.HttpError as e:
-        print(f"❌ Erreur lors de l'upload : {e}")
+        logger.error("❌ Erreur lors de l'upload : %s", e, exc_info=True)
         return None
