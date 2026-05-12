@@ -1,0 +1,11 @@
+package tarot;
+
+public enum Etat {
+	PHASE_DE_CONNEXION,
+	DISTRIBUTION,
+	ENCHERES,
+	ECART,
+	JEUDESPLIS,
+	GESTIONSCORE,	
+	;	
+}

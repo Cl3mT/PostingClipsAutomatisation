@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="600.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.ConnexionCtrl">
+   <children>
+      <Button fx:id="buttonConnexion" layoutX="468.0" layoutY="134.0" mnemonicParsing="false" onMouseClicked="#onConnexion" text="Connexion" />
+      <TextField fx:id="texteHost" layoutX="51.0" layoutY="134.0" prefHeight="23.0" prefWidth="180.0" />
+      <TextField fx:id="textePort" layoutX="254.0" layoutY="134.0" prefHeight="23.0" prefWidth="180.0" />
+      <Label alignment="CENTER" layoutX="51.0" layoutY="104.0" prefHeight="15.0" prefWidth="180.0" text="Host" />
+      <Label alignment="CENTER" layoutX="254.0" layoutY="104.0" prefHeight="15.0" prefWidth="180.0" text="port" />
+      <TextField fx:id="textePseudo" layoutX="51.0" layoutY="47.0" prefHeight="26.0" prefWidth="520.0" />
+      <Label alignment="CENTER" layoutX="198.0" layoutY="23.0" prefHeight="15.0" prefWidth="180.0" text="Pseudonyme" />
+      <Label fx:id="labelEtatConnexion" alignment="CENTER" layoutX="172.0" layoutY="176.0" prefHeight="15.0" prefWidth="171.0" text="déconnecté" />
+      <TextArea fx:id="texteListeJoueurs" layoutX="34.0" layoutY="233.0" prefHeight="299.0" prefWidth="532.0" />
+      <Button fx:id="boutonCommencer" layoutX="227.0" layoutY="547.0" mnemonicParsing="false" onMouseClicked="#onCommencer" text="Commencer la partie" />
+   </children>
+</AnchorPane>

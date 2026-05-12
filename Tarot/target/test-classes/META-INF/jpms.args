@@ -1,0 +1,4 @@
+--patch-module
+tsp.pro3600.cijavafx=_
+--add-reads
+tsp.pro3600.cijavafx=ALL-UNNAMED
